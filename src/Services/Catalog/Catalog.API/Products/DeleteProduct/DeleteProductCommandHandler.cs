@@ -10,7 +10,7 @@
     {
         public async Task<DeleteProductCommandResult> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
-            logger.LogInformation("DeleteProductCommandHandler.Handle called by with {@Query}", request);
+            logger.LogInformation("DeleteProductCommandHandler.Handle called by with {@Command}", request);
 
             var product = await session.LoadAsync<Product>(request.Id, cancellationToken);
 
