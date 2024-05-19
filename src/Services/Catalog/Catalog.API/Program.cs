@@ -1,5 +1,3 @@
-using BuildingBlocks.Behaviors;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -21,9 +19,15 @@ builder.Services.AddMarten(options =>
 
 builder.Services.AddValidatorsFromAssembly(assembly);
 
+builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.MapCarter();
+
+/* Boþ seçenek özel olarak yazdýðýmýz iþleyiciye güvendiðimizi söyler.
+yani custom exception devreye girecektir. */
+app.UseExceptionHandler(options => { });
 
 app.Run();
