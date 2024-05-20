@@ -19,13 +19,11 @@
         }
     }
 
-    public class UpdateProductCommandHandler(IDocumentSession session, ILogger<UpdateProductCommandHandler> logger) :
+    public class UpdateProductCommandHandler(IDocumentSession session) :
         ICommandHandler<UpdateProductCommand, UpdateProductCommandResult>
     {
         public async Task<UpdateProductCommandResult> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
-            logger.LogInformation("UpdateProductCommandHandler.Handle called by with {@Command}", request);
-
             var product = await session.LoadAsync<Product>(request.Id, cancellationToken);
 
             if (product is null)

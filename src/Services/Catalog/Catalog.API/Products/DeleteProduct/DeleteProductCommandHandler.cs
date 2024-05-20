@@ -14,13 +14,11 @@
         }
     }
 
-    public class DeleteProductCommandHandler(IDocumentSession session, ILogger<DeleteProductCommandHandler> logger) :
+    public class DeleteProductCommandHandler(IDocumentSession session) :
         ICommandHandler<DeleteProductCommand, DeleteProductCommandResult>
     {
         public async Task<DeleteProductCommandResult> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
-            logger.LogInformation("DeleteProductCommandHandler.Handle called by with {@Command}", request);
-
             var product = await session.LoadAsync<Product>(request.Id, cancellationToken);
 
             if (product is null)

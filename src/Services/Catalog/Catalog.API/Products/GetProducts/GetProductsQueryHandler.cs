@@ -5,13 +5,11 @@
 
     public record GetProductsResult(IEnumerable<Product> Products);
 
-    public class GetProductsQueryHandler(IDocumentSession session, ILogger<GetProductsQueryHandler> logger)
+    public class GetProductsQueryHandler(IDocumentSession session)
         : IQueryHandler<GetProductsQuery, GetProductsResult>
     {
         public async Task<GetProductsResult> Handle(GetProductsQuery request, CancellationToken cancellationToken)
         {
-            logger.LogInformation("GetProductsQueryHandler.Handle called by with {@Query}", request);
-
             var products = await session.Query<Product>().ToPagedListAsync(request.PageNumber ?? 1, request.PageSize ?? 10, cancellationToken);
 
             return new(products);
