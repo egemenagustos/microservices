@@ -1,6 +1,6 @@
 ﻿namespace Catalog.API.Products.GetProducts
 {
-    public record GetProductsQuery()
+    public record GetProductsQuery(int? PageNumber = 1, int? PageSize = 10)
         : IQuery<GetProductsResult>;
 
     public record GetProductsResult(IEnumerable<Product> Products);
@@ -12,7 +12,7 @@
         {
             logger.LogInformation("GetProductsQueryHandler.Handle called by with {@Query}", request);
 
-            var products = await session.Query<Product>().ToListAsync(cancellationToken);
+            var products = await session.Query<Product>().ToPagedListAsync(request.PageNumber ?? 1, request.PageSize ?? 10, cancellationToken);
 
             return new(products);
         }
