@@ -2,7 +2,7 @@
 {
     public record StoreBasketRequest(ShoppingCart ShoppingCart);
 
-    public record StoreBasketCommandResponse(string userName);
+    public record StoreBasketCommandResponse(string UserName);
 
     public class StoreBasketEndpoints : ICarterModule
     {
@@ -16,7 +16,7 @@
 
                 var response = result.Adapt<StoreBasketCommandResponse>();
 
-                return Results.Created($"/basket/{response.userName}",response);
+                return Results.Created($"/basket/{response.UserName}",response);
             })
                 .WithName("StoreBasket")
                 .Produces<StoreBasketCommandResponse>(StatusCodes.Status201Created)
