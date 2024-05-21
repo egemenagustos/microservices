@@ -14,14 +14,14 @@
         }
     }
 
-    public class StoreBasketQueryHandler :
+    public class StoreBasketQueryHandler(IBasketRepository basketRepository) :
         ICommandHandler<StoreBasketCommand, StoreBasketCommandResult>
     {
         public async Task<StoreBasketCommandResult> Handle(StoreBasketCommand request, CancellationToken cancellationToken)
-        {
-            ShoppingCart cart = request.ShoppingCart;
+        { 
+            await basketRepository.StoreBasket(request.ShoppingCart,cancellationToken);
 
-            return new("cart.UserName");
+            return new(request.ShoppingCart.UserName);
         }
     }
 }
