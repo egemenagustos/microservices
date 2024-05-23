@@ -1,4 +1,5 @@
 using BuildingBlocks.Exceptions.Handler;
+using Discount.Grpc.Protos;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
@@ -6,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+//Application Services...
 builder.Services.AddCarter();
 
 builder.Services.AddMediatR(configuration =>
@@ -15,6 +17,7 @@ builder.Services.AddMediatR(configuration =>
     configuration.AddOpenBehavior(typeof(LoggingBehavior<,>));
 });
 
+//Data Services...
 builder.Services.AddMarten(opt =>
 {
     opt.Connection(builder.Configuration.GetConnectionString("Database")!);
@@ -30,16 +33,32 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
 });
 
+//Cross-Cutting Services...
+builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+
 builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("Database")!)
     .AddRedis(builder.Configuration.GetConnectionString("Redis")!);
 
-builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+
+//Grpc Services...
+builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(options =>
+{
+    options.Address = new Uri(builder.Configuration["GrpcSettings:DiscountUrl"]!);
+})
+    .ConfigurePrimaryHttpMessageHandler(() =>
+    {
+        var handler = new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback =
+            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+        };
+        return handler;
+    });
 
 var app = builder.Build();
 
 //Configure the HTTP request pipeline.
-
 app.MapCarter();
 
 app.UseExceptionHandler(options => { });
